@@ -53,9 +53,14 @@ dependencies {
     implementation(libs.retrofit.gson)
     implementation(libs.okhttp.logging)
 
-    testImplementation(libs.junit)
-
     implementation(libs.picasso)
+
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
+    implementation(libs.play.services.auth)
+
+
+    testImplementation(libs.junit)
 
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
