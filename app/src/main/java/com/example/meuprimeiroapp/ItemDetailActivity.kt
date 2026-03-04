@@ -3,6 +3,7 @@ package com.example.meuprimeiroapp
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -16,12 +17,20 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import com.example.meuprimeiroapp.service.Result
 import com.example.meuprimeiroapp.ui.loadUrl
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.GoogleMap
+import com.google.android.gms.maps.OnMapReadyCallback
+import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 
-class ItemDetailActivity : AppCompatActivity() {
+class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var binding: ActivityItemDetailBinding
-
     private lateinit var item: Item
+
+    private lateinit var mMap: GoogleMap
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityItemDetailBinding.inflate(layoutInflater)
@@ -29,6 +38,11 @@ class ItemDetailActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setupView()
         loadItem()
+        setupGoogleMap()
+    }
+
+    override fun onMapReady(googleMap: GoogleMap) {
+        mMap = googleMap
     }
 
     private fun setupView() {
@@ -62,14 +76,38 @@ class ItemDetailActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupGoogleMap(){
+        val mapfragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapfragment.getMapAsync(this)
+    }
+
     private fun handleSuccess()
     {
         binding.name.text = item.value.fullName
         binding.age.text = getString(R.string.item_age, item.value.age)
         binding.profession.setText(item.value.profession)
         binding.image.loadUrl(item.value.imageUrl)
+        loadItemInGoogleMap()
     }
 
+    private fun loadItemInGoogleMap(){
+        item.value.location?.let {
+            binding.googleMapContent.visibility = View.VISIBLE
+            val location = LatLng(it.latitude, it.longitude)
+            mMap.addMarker(
+                MarkerOptions()
+                    .position(location)
+                    .title(it.name)
+            )
+            mMap.moveCamera(
+                CameraUpdateFactory.newLatLngZoom(
+                    location,
+                    15f
+                )
+            )
+        }
+
+    }
 
     companion object {
         const val ARG_ID = "arg_id"
