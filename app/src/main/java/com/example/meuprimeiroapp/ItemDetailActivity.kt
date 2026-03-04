@@ -43,6 +43,10 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
+        if(::item.isInitialized){
+            // Carrega o item no mapa
+            loadItemInGoogleMap()
+        }
     }
 
     private fun setupView() {
@@ -77,8 +81,8 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun setupGoogleMap(){
-        val mapfragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapfragment.getMapAsync(this)
+        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
     }
 
     private fun handleSuccess()
@@ -91,6 +95,7 @@ class ItemDetailActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun loadItemInGoogleMap(){
+        if(!::mMap.isInitialized) return)
         item.value.location?.let {
             binding.googleMapContent.visibility = View.VISIBLE
             val location = LatLng(it.latitude, it.longitude)
